@@ -5,6 +5,7 @@ import connect from "@/lib/db";
 import { Types } from "mongoose";
 
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ObjectId = require("mongoose").Types.ObjectId;
 
 // Get request from the api 
@@ -16,7 +17,6 @@ export const GET = async () => {
     } catch (error: any) {
         return new NextResponse ("Error in Fetching Users" + error.message, {status: 500})
     }
-    return new NextResponse ("This is the beginning of learning api with NextJs") 
 } 
 
 // Post request from the api
@@ -34,7 +34,7 @@ export const POST = async (request: Request) => {
     }
 }
 
-// Update database request from the api 
+// Update database request from the api where users details can be altered 
 
 export const PATCH = async (request: Request) => {
     try {
@@ -82,6 +82,50 @@ export const PATCH = async (request: Request) => {
         );
     }
 };
+
+export const DELETE = async (request: Request) => {
+try {
+    const {searchParams} = new URL(request.url)
+    const userId = searchParams.get("userId");
+    
+    if (!userId) {
+        return new NextResponse(
+            JSON.stringify({ message: "Id or new Username not found" }),
+            { status: 400 }
+        );
+    }
+
+    if (!Types.ObjectId.isValid(userId)) {
+        return new NextResponse(
+            JSON.stringify({ message: "Invalid User Id" }),
+            { status: 400 }
+        );
+    }
+
+    await connect();
+
+    const deleteUser = await User.findOneAndDelete(
+        new Types.ObjectId(userId)
+    );
+
+if (!deleteUser){
+    return new NextResponse(
+        JSON.stringify({message: "User not found in the database"}),
+        {status: 400}
+    );
+} 
+ return new NextResponse(
+    JSON.stringify({message: "User is deleted", user: deleteUser}),
+    {status: 200}
+ )
+
+
+} catch (error: any) {
+    return new NextResponse("Error in deleting user" + error.message, {
+        status: 500
+    })
+}
+}
 
 
 
