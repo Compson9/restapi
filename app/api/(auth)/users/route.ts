@@ -1,5 +1,4 @@
 import {NextResponse} from "next/server";
-// import connect from "@/lib/db"
 import User from "@/lib/models/user";
 import connect from "@/lib/db";
 import { Types } from "mongoose";
@@ -83,6 +82,7 @@ export const PATCH = async (request: Request) => {
     }
 };
 
+// DELETE REQUEST FROM THE API 
 export const DELETE = async (request: Request) => {
 try {
     const {searchParams} = new URL(request.url)
