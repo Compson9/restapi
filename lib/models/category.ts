@@ -1,17 +1,18 @@
 import { Schema, model, models } from "mongoose";
 
-const CategorySchema = new Schema (
+// Define the schema for the Category model
+const CategorySchema = new Schema(
     {
-        title: {type: "string", required: true},
-        user: {types: Schema.Types.ObjectId, ref:"user"},
+        title: { type: "string", required: true }, // Title of the category
+        user: { type: Schema.Types.ObjectId, ref: "user" }, // Reference to the user who created the category
     },
     {
-        timestamps: true,
+        timestamps: true, // Automatically manage createdAt and updatedAt fields
     }
-   
-)
+);
 
+// Create the Category model if it doesn't already exist
 const Category = models.Category || model("Category", CategorySchema);
 
-export default Category
+export default Category; // Export the Category model
 
