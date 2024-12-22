@@ -14,6 +14,10 @@ export const GET = async (request: Request) => {
         const searchKeywords = searchParams.get("searchKeywords");
         const startDate = searchParams.get("startDate");
         const endDate = searchParams.get("endDate");
+        const page: any = parseInt(searchParams.get("page") || "1");
+        const limit: any = parseInt(searchParams.get("limit") || "10");
+
+
 
 
 
@@ -83,8 +87,16 @@ export const GET = async (request: Request) => {
             };
         }
 
+        const skip = (page - 1) * limit;
 
-        const blogs = await Blog.find(filter);
+
+
+
+        const blogs = await Blog.find(filter).sort({createdAt: "asc"}).skip(skip).limit(limit);
+        
+
+
+
         return new NextResponse(JSON.stringify({ blogs }), { status: 200 });
 
     } catch (error: unknown) {
