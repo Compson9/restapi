@@ -82,7 +82,7 @@ export const GET = async (request: Request, context: { params: { blog: string } 
     }
 }
 
-export const PATCH = async (request: Request, context: { params: any }) => {
+export const PATCH = async (request: Request, context: { params: { blog: string } }) => {
     const blogId = context.params.blog;
 
 
@@ -152,9 +152,9 @@ export const PATCH = async (request: Request, context: { params: any }) => {
     }
 }
 
-export const DELETE = async(request: Request, context: {params: any}) => {
+export const DELETE = async (request: Request, context: { params: string }) => {
     const blogId = context.params.blog;
-    
+
     try {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
@@ -172,7 +172,34 @@ export const DELETE = async(request: Request, context: {params: any}) => {
         }
 
         await connect();
-        
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return new NextResponse(
+                JSON.stringify({ message: "User not found" }),
+                { status: 400 }
+            );
+        }
+
+        const blog = await Blog.findOne({
+            _id: blogId,
+            user: userId,
+        });
+
+
+        if (!blog) {
+            return new NextResponse(JSON.stringify({
+                message: "Blog not found"
+            }),
+                { status: 400 }
+            );
+        }
+
+        await Blog.findOneAndDelete(blogId);
+        return new NextResponse(JSON.stringify({ message: "The blog has been deleted successfully" }),
+            { status: 200 })
+
+
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         return new NextResponse(
@@ -181,3 +208,4 @@ export const DELETE = async(request: Request, context: {params: any}) => {
         );
     }
 }
+
